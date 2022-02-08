@@ -24,6 +24,9 @@ class BasePage extends React.Component {
   componentDidMount() {
     this.getNextPage(0)
   }
+  componentDidUpdate(){
+    this.getNextPage(this.state.page)
+  }
 
   async getNextPage(page) {
     const data = await this.service.getCharacters(page)
