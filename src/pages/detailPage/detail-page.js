@@ -21,17 +21,17 @@ function DetailPage() {
             setChar(char);
             var index = 0
             var episodeArray = []
-            const last5Episodes = char.episode.slice(char.episode.length - 5, char.episode.length);
+            const last5Episodes = char.episode.length < 5 ? char.episode : char.episode.slice(char.episode.length - 5, char.episode.length);
             getEpisodes(last5Episodes[index])
             async function getEpisodes(url) {
                 const res = await axios(url)
                 const episode = await res.data;
                 episodeArray.push(episode)
-                if (index < 4) {
+                if (index < last5Episodes.length - 1) {
                     index++
                     getEpisodes(last5Episodes[index])
                 }
-                else if (index == 4) {
+                else if (index == last5Episodes.length - 1) {
                     setEpisode(episodeArray)
                 }
             }

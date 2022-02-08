@@ -13,30 +13,22 @@ class BasePage extends React.Component {
     super(props);
     this.service = new Service()
     this.state = {
-      page: 0,
+      page: -1,
       info: [],
       characters: [],
     }
     this.getNextPage = this.getNextPage.bind(this);
-    this.fetchMoreData = this.fetchMoreData.bind(this);
   }
 
   componentDidMount() {
-    this.getNextPage(0)
+    this.getNextPage();
   }
-  componentDidUpdate(){
-    this.getNextPage(this.state.page)
-  }
-
-  async getNextPage(page) {
-    const data = await this.service.getCharacters(page)
-    this.setState({ characters: [...this.state.characters, ...data.results], info: data.info })
-    return data
-  }
-
-  async fetchMoreData() {
-    this.state.page++
-    this.getNextPage(this.state.page)
+  
+  async getNextPage() {
+    this.state.page++;
+    const data = await this.service.getCharacters(this.state.page);
+    this.setState({ characters: [...this.state.characters, ...data.results], info: data.info });
+    return data;
   }
 
   render() {
@@ -53,15 +45,17 @@ class BasePage extends React.Component {
         }}>
         The Rick and Morty Client
       </Typography>
-        <div id="scrollableDiv" style={{ height: 'auto', overflow: "auto" }}>
           <InfiniteScroll
             dataLength={this.state.characters.length}
-            next={this.fetchMoreData}
+            next={this.getNextPage}
             hasMore={this.state.page <= this.state.info.pages}
-            loader={<h4>Loading...</h4>}
-            scrollableTarget="scrollableDiv"
+            loader={<h4>Loading...</h4> }
+            endMessage={
+              <p style={{ textAlign: "center" }}>
+                <b>Yay! You have seen it all</b>
+              </p>
+            }
           >
-
               <Grid item sx={{
                 float: 'none',
                 margin: 'auto',
@@ -90,12 +84,6 @@ class BasePage extends React.Component {
                   </Grid>))}
               </Grid>
           </InfiniteScroll>
-        </div>
-
-        <div
-          ref={loadingRef => (this.loadingRef = loadingRef)}
-        >
-        </div>
       </React.Fragment>
     )
   }
